@@ -1,13 +1,13 @@
 <?php
 
-namespace Himel\InWord;
+namespace Himel\Web;
 
 use Exception;
 
 class InWord
 {
 
-    const VERSION = '1.0';
+    const VERSION = '1.0.0';
     private $languages = array('bn');
     private $configs = [];
 
