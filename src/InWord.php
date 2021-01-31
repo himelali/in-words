@@ -8,6 +8,7 @@ class InWord {
 
     const VERSION = '1.0.0';
     protected $languages = array('bn','en');
+    private $lang = 'en';
     protected $configs = [];
     protected $number = null;
     protected $date = null;
@@ -17,8 +18,10 @@ class InWord {
      * @param string $language
      */
     public function __construct($language = 'en') {
-        if (in_array($language, $this->languages))
-            $this->configs = $this->getConfigs($language);
+        if (in_array($language, $this->languages)) {
+            $this->lang = $language;
+            $this->configs = $this->getConfigs();
+        }
     }
 
     /**
@@ -32,8 +35,8 @@ class InWord {
      * @param $language
      * @return mixed
      */
-    protected function getConfigs($language) {
-        return include __DIR__."/lang/$language.php";
+    protected function getConfigs() {
+        return include __DIR__.'/lang/'.$this->lang.'.php';
     }
 
     /**
@@ -52,7 +55,8 @@ class InWord {
      * @param $language
      */
     public function setConfig($language) {
-        $this->configs = $this->getConfigs($language);
+        $this->lang = $language;
+        $this->configs = $this->getConfigs();
     }
 
     /**
@@ -148,9 +152,9 @@ class InWord {
 
     private function makePlural($text) {
         $words = explode(' ',$text);
-        if($words[0] == 'one') {
-            return $text;
-        } return rtrim($text).'s ';
+        if($words[0] != 'one' && $this->lang == 'en') {
+            return rtrim($text).'s ';
+        } return $text;
     }
 
 }
