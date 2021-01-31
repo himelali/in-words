@@ -14,9 +14,16 @@ composer require himelali/in-words
 ```
 $in_word = new InWord();
 
-echo $in_word->engToBn(5207.56); //৫২০৭.৫৬
+$in_word->setNumber(215245);
 
-echo $in_word->numToWord(215245); //দুই লক্ষ পনের হাজার দুই শত পঁয়তাল্লিশ
+echo $in_word->getNumber(); //২১৫২৪৫
 
-echo $in_word->numToWord(527.56); //পাঁচ শত সাতাশ দশমিক পাঁচ ছয়
+echo $in_word->getWord(); //দুই লক্ষ পনের হাজার দুই শত পঁয়তাল্লিশ
+
+
+$in_word->setNumber(527.56);
+
+echo $in_word->getNumber(); ; //৫২০৭.৫৬
+
+echo $in_word->getWord(); //পাঁচ শত সাতাশ দশমিক পাঁচ ছয়
 ```
