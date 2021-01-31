@@ -1,3 +1,10 @@
+<p align="center">
+  <img src="https://img.shields.io/packagist/dt/himelali/in-words" alt="Total Downloads"/>
+  <img src="https://img.shields.io/github/license/himelali/in-words" alt="License"/>
+  <img src="https://img.shields.io/github/stars/himelali/in-words" alt="Stars"/>
+  <img src="https://img.shields.io/github/forks/himelali/in-words" alt="Forks"/>
+</p>
+
 # in-words
 PHP package to convert english numbers to other language number in words or months or week
 
