@@ -1,6 +1,8 @@
 # in-words
 PHP package to convert english numbers to other language number in words or months or week
-Now included Bengali/(বাংলা) and English(ইংরেজি)
+
+Now included Bengali / (বাংলা) and English (ইংরেজি)
+
 Version 1.0.0
 
 ### Package Installation
