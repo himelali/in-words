@@ -3,7 +3,15 @@ PHP package to convert english numbers to other language number in words or mont
 
 Now included Bengali / (বাংলা) and English (ইংরেজি)
 
-Version 1.0.0
+Default English active if you need bengali the pass parameter by constructor
+
+For Bengali ```'bn'``` and for english it will be blank or ```'en'```
+#Version 1.0.0
+
+#Example
+```
+$in_word = new InWord('bn');
+```
 
 ### Package Installation
 
