@@ -1,6 +1,8 @@
 <?php
 
+
 namespace Himel\Web;
+
 
 class InWord {
 
@@ -81,9 +83,9 @@ class InWord {
         if(is_float($number)) {
             $numbers = explode('.',$number);
             $word = rtrim($this->numberToWord($numbers[0]));
-            if(isset($numbers[1])){
-                $word .= $this->configs['divider'].$this->numberToDecimalWord((string)$numbers[1]);
-            } return $word;
+            if(isset($numbers[1]))
+                $word .= ($this->configs['divider'].$this->numberToDecimalWord((string)$numbers[1]));
+            return $word;
         } return $this->numberToWord($number);
     }
 
@@ -115,33 +117,40 @@ class InWord {
         $million_10 = (int) ($num / 10000000);
         if($million_10 != 0){
             if($million_10 > 99) {
-                $word .= $this->makeWord($million_10).$this->configs['crore'];
+                $word .= $this->makePlural($this->makeWord($million_10).$this->configs['crore']);
             } else{
-                $word .= $this->configs['words'][$million_10].$this->configs['crore'];
+                $word .= $this->makePlural($this->configs['words'][$million_10].$this->configs['crore']);
             }
         }
 
         $million_10_div = $num % 10000000;
         $lac = (int) ($million_10_div/100000);
         if($lac > 0){
-            $word .= $this->configs['words'][$lac].$this->configs['lac'];
+            $word .= $this->makePlural($this->configs['words'][$lac].$this->configs['lac']);
         }
 
         $lac_div = $million_10_div % 100000;
         $thousand = (int) ($lac_div / 1000);
         if($thousand > 0){
-            $word .= $this->configs['words'][$thousand].$this->configs['thousand'];
+            $word .= $this->makePlural($this->configs['words'][$thousand].$this->configs['thousand']);
         }
 
         $thousand_div = $lac_div % 1000;
         $hundred = (int) ($thousand_div / 100);
         if($hundred > 0){
-            $word .= $this->configs['words'][$hundred].$this->configs['hundred'];
+            $word .= ($this->configs['words'][$hundred].$this->configs['hundred']);
         }
         $hundred_div = (int) ($thousand_div%100);
         if($hundred_div > 0){
             $word .= $this->configs['words'][$hundred_div];
         } return rtrim($word);
+    }
+
+    private function makePlural($text) {
+        $words = explode(' ',$text);
+        if($words[0] == 'one') {
+            return $text;
+        } return rtrim($text).'s ';
     }
 
 }
