@@ -33,7 +33,7 @@ class InWord {
      * @return mixed
      */
     protected function getConfigs($language) {
-        return include "lang/$language.php";
+        return include __DIR__."/lang/$language.php";
     }
 
     /**
@@ -138,7 +138,7 @@ class InWord {
         $thousand_div = $lac_div % 1000;
         $hundred = (int) ($thousand_div / 100);
         if($hundred > 0){
-            $word .= ($this->configs['words'][$hundred].$this->configs['hundred']);
+            $word .= $this->makePlural(($this->configs['words'][$hundred].$this->configs['hundred']));
         }
         $hundred_div = (int) ($thousand_div%100);
         if($hundred_div > 0){
