@@ -14,7 +14,7 @@ class InWord {
      * InWord constructor.
      * @param string $language
      */
-    public function __construct($language = 'bn') {
+    public function __construct($language = 'en') {
         if (in_array($language, $this->languages))
             $this->configs = $this->getConfigs($language);
     }
