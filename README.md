@@ -13,9 +13,10 @@ Now included Bengali / (বাংলা) and English (ইংরেজি)
 Default English active if you need bengali the pass parameter by constructor
 
 For Bengali ```'bn'``` and for english it will be blank or ```'en'```
-#Version 1.0.0
 
-#Example
+# Version 1.0.1
+
+# Example
 ```
 $in_word = new InWord('bn');
 ```
