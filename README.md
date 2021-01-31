@@ -34,7 +34,7 @@ echo $in_word->getWord(); //দুই লক্ষ পনের হাজার 
 
 $in_word->setNumber(527.56);
 
-echo $in_word->getNumber(); ; //৫২০৭.৫৬
+echo $in_word->getNumber(); ; //৫২৭.৫৬
 
 echo $in_word->getWord(); //পাঁচ শত সাতাশ দশমিক পাঁচ ছয়
 ```
