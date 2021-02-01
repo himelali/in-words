@@ -43,7 +43,7 @@ echo $in_word->getWord(); //পাঁচ শত সাতাশ দশমিক 
 ```
 $in_word = new InWord();
 
-echo $in_word->setNumber(215245)->getNumber(); //৫২৭.৫৬
+echo $in_word->setNumber(527.56)->getNumber(); //৫২৭.৫৬
 
-echo $in_word->setNumber(215245)->getWord(); //পাঁচ শত সাতাশ দশমিক পাঁচ ছয়
+echo $in_word->setNumber(527.56)->getWord(); //পাঁচ শত সাতাশ দশমিক পাঁচ ছয়
 ```
