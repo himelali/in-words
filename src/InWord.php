@@ -6,7 +6,7 @@ namespace Himel\Web;
 
 class InWord {
 
-    const VERSION = '1.0.0';
+    const VERSION = '1.0.2';
     protected $languages = array('bn','en');
     private $lang = 'en';
     protected $configs = [];
@@ -53,14 +53,17 @@ class InWord {
 
     /**
      * @param $language
+     * @return InWord
      */
     public function setConfig($language) {
         $this->lang = $language;
         $this->configs = $this->getConfigs();
+        return $this;
     }
 
     /**
      * @param $num
+     * @return InWord
      */
     public function setNumber($num) {
         try {
@@ -68,7 +71,7 @@ class InWord {
                 $this->number = $num;
         } catch (Exception $exception) {
             die("$num is not supported");
-        }
+        } return $this;
     }
 
     /**

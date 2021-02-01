@@ -2,7 +2,7 @@
   "name": "himelali/in-words",
   "type": "library",
   "description": "PHP package to convert english numbers to other language number in words or months or week",
-  "keywords": ["laravel","php number","number-bangla","number-month","number-week"],
+  "keywords": ["laravel","number to words","php number","number-bangla","number-month","number-week"],
   "homepage": "https://github.com/himelali/in-words",
   "license": "MIT",
   "authors": [
