@@ -13,6 +13,7 @@ auth.json
 /node_modules
 
 # IDEs and editors
+/.claude
 /.idea
 /.vscode
 /.fleet
