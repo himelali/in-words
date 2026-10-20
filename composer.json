@@ -1,24 +1,71 @@
 {
-  "name": "himelali/in-words",
-  "type": "library",
-  "description": "PHP package to convert english numbers to other language number in words or months or week",
-  "keywords": ["laravel","number to words","php number","number-bangla","number-month","number-week"],
-  "homepage": "https://github.com/himelali/in-words",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Md. Himel Ali",
-      "email": "himelali@gmail.com"
-    }
-  ],
-  "require": {
-    "php": ">=5.6.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "Himel\\Web\\": "src"
-    }
-  },
-  "minimum-stability": "stable",
-  "prefer-stable": true
+    "name": "himelali/in-words",
+    "description": "Convert numbers to words in 14 languages (English, Bengali, Hindi, Urdu, Arabic, Chinese, Spanish, French, Portuguese, Russian, Indonesian, German, Japanese) with native (lakh/crore, 万/亿) or international (million/billion/trillion) numbering.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "number to words",
+        "numbers in words",
+        "spell out numbers",
+        "amount in words",
+        "bangla",
+        "bengali",
+        "hindi",
+        "urdu",
+        "arabic",
+        "chinese",
+        "spanish",
+        "french",
+        "lakh crore",
+        "million billion trillion",
+        "laravel",
+        "php"
+    ],
+    "homepage": "https://github.com/himelali/in-words",
+    "support": {
+        "issues": "https://github.com/himelali/in-words/issues",
+        "source": "https://github.com/himelali/in-words"
+    },
+    "authors": [
+        {
+            "name": "Md. Himel Ali",
+            "email": "himelali@gmail.com",
+            "homepage": "https://himelali.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.0 || ^8.0"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.7"
+    },
+    "suggest": {
+        "ext-intl": "Used by the test suite to check Unicode (NFC) normalization of the words."
+    },
+    "autoload": {
+        "psr-4": {
+            "Himelali\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Himelali\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "php tests/run.php",
+        "lint": "phpcs",
+        "fix": "phpcbf"
+    },
+    "scripts-descriptions": {
+        "test": "Run the test suite.",
+        "lint": "Check the code against PSR-12.",
+        "fix": "Fix PSR-12 violations automatically."
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

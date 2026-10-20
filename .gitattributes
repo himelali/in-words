@@ -1,0 +1,10 @@
+* text=auto
+
+# PSR-12: PHP files must use Unix LF line endings.
+*.php text eol=lf
+
+# Keep development files out of the package installed by Composer.
+/.gitattributes  export-ignore
+/.gitignore      export-ignore
+/phpcs.xml.dist  export-ignore
+/tests           export-ignore

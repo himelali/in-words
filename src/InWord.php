@@ -1,163 +1,221 @@
 <?php
 
+declare(strict_types=1);
 
-namespace Himel\Web;
+namespace Himelali;
 
+use ErrorException;
+use Himelali\Contracts\ConverterInterface;
+use Himelali\Contracts\DigitsInterface;
+use Himelali\Contracts\LanguageInterface;
+use Himelali\Exceptions\InvalidNumberException;
+use Himelali\Exceptions\InvalidOptionException;
+use Himelali\Exceptions\NumberNotSetException;
+use Himelali\Exceptions\UnsupportedLanguageException;
+use Himelali\Support\DigitTransliterator;
+use Himelali\Support\ErrorGuard;
+use Himelali\Support\Number;
+use Himelali\Support\NumberConverter;
+use Himelali\Support\NumberParser;
 
-class InWord {
-
-    const VERSION = '1.0.2';
-    protected $languages = array('bn','en');
-    private $lang = 'en';
-    protected $configs = [];
-    protected $number = null;
-    protected $date = null;
+/**
+ * Converts numbers to words and native digits.
+ *
+ *     $inWord = new InWord('bn');
+ *     echo $inWord->setNumber(215245)->getWord(); // দুই লক্ষ পনেরো হাজার দুই শত পঁয়তাল্লিশ
+ *
+ * Methods that take user input are validated instead of type-hinted, so a wrong value always
+ * raises a package exception (never a TypeError or a silent type coercion).
+ */
+class InWord
+{
+    const VERSION = '2.0.0';
 
     /**
-     * InWord constructor.
-     * @param string $language
+     * @var LanguageRegistry
      */
-    public function __construct($language = 'en') {
-        if (in_array($language, $this->languages)) {
-            $this->lang = $language;
-            $this->configs = $this->getConfigs();
+    private $registry;
+
+    /**
+     * @var ConverterInterface
+     */
+    private $converter;
+
+    /**
+     * @var NumberParser
+     */
+    private $parser;
+
+    /**
+     * @var DigitTransliterator
+     */
+    private $transliterator;
+
+    /**
+     * @var LanguageInterface
+     */
+    private $language;
+
+    /**
+     * @var bool
+     */
+    private $international = false;
+
+    /**
+     * @var Number|null
+     */
+    private $number;
+
+    /**
+     * @param string|LanguageInterface $language      Language code or instance, default "en".
+     * @param bool                     $international Use million / billion / trillion instead of the native system.
+     * @param LanguageRegistry|null    $registry      Custom registry with extra languages.
+     * @param ConverterInterface|null  $converter     Custom conversion algorithm.
+     * @throws Exception
+     */
+    public function __construct($language = 'en', $international = false, $registry = null, $converter = null)
+    {
+        if ($registry !== null && !$registry instanceof LanguageRegistry) {
+            throw InvalidOptionException::type('registry', 'an instance of ' . LanguageRegistry::class, $registry);
         }
+        if ($converter !== null && !$converter instanceof ConverterInterface) {
+            throw InvalidOptionException::type('converter', 'an instance of ' . ConverterInterface::class, $converter);
+        }
+
+        $this->registry = $registry ?? new LanguageRegistry();
+        $this->converter = $converter ?? new NumberConverter();
+        $this->parser = new NumberParser();
+        $this->transliterator = new DigitTransliterator();
+
+        $this->setLanguage($language);
+        $this->setInternational($international);
     }
 
-    /**
-     * @return string
-     */
-    public function getVersion() {
+    public function getVersion(): string
+    {
         return self::VERSION;
     }
 
     /**
-     * @param $language
-     * @return mixed
+     * @param string|LanguageInterface $language Language code (e.g. "bn", "en_IN") or instance.
+     * @throws UnsupportedLanguageException
      */
-    protected function getConfigs() {
-        return include __DIR__.'/lang/'.$this->lang.'.php';
-    }
-
-    /**
-     * @param $num
-     * @return bool
-     * @throws Exception
-     */
-    private function isValid($num)
+    public function setLanguage($language): self
     {
-        if(!is_numeric($num) || $num>999999999999999 || strpos($num, 'E') !== false)
-            throw new Exception('Number is not correct');
-        return true;
-    }
+        $this->language = $language instanceof LanguageInterface ? $language : $this->registry->make($language);
 
-    /**
-     * @param $language
-     * @return InWord
-     */
-    public function setConfig($language) {
-        $this->lang = $language;
-        $this->configs = $this->getConfigs();
         return $this;
     }
 
     /**
-     * @param $num
-     * @return InWord
+     * Alias of setLanguage(), kept for version 1.x compatibility.
+     *
+     * @param string|LanguageInterface $language
+     * @throws UnsupportedLanguageException
      */
-    public function setNumber($num) {
-        try {
-            if ($this->isValid($num))
-                $this->number = $num;
-        } catch (Exception $exception) {
-            die("$num is not supported");
-        } return $this;
+    public function setConfig($language): self
+    {
+        return $this->setLanguage($language);
+    }
+
+    public function getLanguage(): LanguageInterface
+    {
+        return $this->language;
     }
 
     /**
-     * @return string
+     * Supported languages as code => name.
+     *
+     * @return string[]
      */
-    public function getNumber() {
-        return strtr($this->number,$this->configs['numbers']);
+    public function getSupportedLanguages(): array
+    {
+        return $this->registry->all();
     }
 
     /**
-     * @param $number
-     * @return string
+     * true: million / billion / trillion. false: the language's native system (lakh / crore, 万 / 亿 ...).
+     *
+     * @param bool $enabled
+     * @throws InvalidOptionException
      */
-    protected function makeWord($number) {
-        if($number == 0) { return $this->configs['zero']; }
-        if(is_float($number)) {
-            $numbers = explode('.',$number);
-            $word = rtrim($this->numberToWord($numbers[0]));
-            if(isset($numbers[1]))
-                $word .= ($this->configs['divider'].$this->numberToDecimalWord((string)$numbers[1]));
-            return $word;
-        } return $this->numberToWord($number);
+    public function setInternational($enabled = true): self
+    {
+        if (!is_bool($enabled)) {
+            throw InvalidOptionException::type('international', 'a boolean', $enabled);
+        }
+        $this->international = $enabled;
+
+        return $this;
+    }
+
+    public function isInternational(): bool
+    {
+        return $this->international;
     }
 
     /**
-     * @return string
+     * @param int|float|string $number Non-negative number, up to 15 integer digits.
+     * @throws InvalidNumberException
      */
-    public function getWord() {
-        return $this->makeWord($this->number);
+    public function setNumber($number): self
+    {
+        $this->number = $this->parser->parse($number);
+
+        return $this;
     }
 
     /**
-     * @param $num
-     * @return string
+     * The number written with the language's native digits, e.g. "৫২৭.৫৬".
+     *
+     * @throws Exception|ErrorException
      */
-    protected function numberToDecimalWord($num) {
-        $decimals = str_split($num);
-        $word = '';
-        foreach ($decimals as $key => $decimal) {
-            $word .= $this->configs['words'][$decimal].' ';
-        } return rtrim($word);
-    }
-
-    /**
-     * @param $num
-     * @return string
-     */
-    protected function numberToWord($num) {
-        $word = '';
-        $million_10 = (int) ($num / 10000000);
-        if($million_10 != 0){
-            if($million_10 > 99) {
-                $word .= $this->makePlural($this->makeWord($million_10).$this->configs['crore']);
-            } else{
-                $word .= $this->makePlural($this->configs['words'][$million_10].$this->configs['crore']);
-            }
+    public function getNumber(): string
+    {
+        $number = $this->requireNumber();
+        if (!$this->language instanceof DigitsInterface) {
+            return $number->value();
         }
 
-        $million_10_div = $num % 10000000;
-        $lac = (int) ($million_10_div/100000);
-        if($lac > 0){
-            $word .= $this->makePlural($this->configs['words'][$lac].$this->configs['lac']);
-        }
-
-        $lac_div = $million_10_div % 100000;
-        $thousand = (int) ($lac_div / 1000);
-        if($thousand > 0){
-            $word .= $this->makePlural($this->configs['words'][$thousand].$this->configs['thousand']);
-        }
-
-        $thousand_div = $lac_div % 1000;
-        $hundred = (int) ($thousand_div / 100);
-        if($hundred > 0){
-            $word .= $this->makePlural(($this->configs['words'][$hundred].$this->configs['hundred']));
-        }
-        $hundred_div = (int) ($thousand_div%100);
-        if($hundred_div > 0){
-            $word .= $this->configs['words'][$hundred_div];
-        } return rtrim($word);
+        return ErrorGuard::run(function () use ($number) {
+            return $this->transliterator->transliterate($number, $this->language);
+        });
     }
 
-    private function makePlural($text) {
-        $words = explode(' ',$text);
-        if($words[0] != 'one' && $this->lang == 'en') {
-            return rtrim($text).'s ';
-        } return $text;
+    /**
+     * The number in words.
+     *
+     * @throws Exception|ErrorException
+     */
+    public function getWord(): string
+    {
+        $number = $this->requireNumber();
+
+        return ErrorGuard::run(function () use ($number) {
+            return $this->converter->convert($number, $this->language, $this->international);
+        });
     }
 
+    /**
+     * Shortcut for setNumber($number)->getWord().
+     *
+     * @param int|float|string $number
+     * @throws Exception|ErrorException
+     */
+    public function toWords($number): string
+    {
+        return $this->setNumber($number)->getWord();
+    }
+
+    /**
+     * @throws NumberNotSetException
+     */
+    private function requireNumber(): Number
+    {
+        if ($this->number === null) {
+            throw NumberNotSetException::create();
+        }
+
+        return $this->number;
+    }
 }

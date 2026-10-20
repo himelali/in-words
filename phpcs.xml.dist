@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ruleset name="in-words">
+    <description>PSR-12 coding standard for himelali/in-words.</description>
+
+    <file>src</file>
+    <file>tests</file>
+
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <arg value="sp"/>
+
+    <rule ref="PSR12">
+        <!--
+            PSR-12 requires constant visibility only when the minimum supported PHP version is 7.1 or later.
+            This package supports PHP 7.0, where "public const" is a syntax error.
+        -->
+        <exclude name="PSR12.Properties.ConstantVisibility.NotFound"/>
+    </rule>
+</ruleset>

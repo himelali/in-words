@@ -1,0 +1,27 @@
+# Composer
+/vendor
+composer.lock
+auth.json
+
+# Tests and tools
+/.phpunit.cache
+.phpunit.result.cache
+/coverage
+/build
+.php-cs-fixer.cache
+.php_cs.cache
+/node_modules
+
+# IDEs and editors
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.zed
+*.swp
+*~
+
+# OS and logs
+.DS_Store
+Thumbs.db
+*.log
