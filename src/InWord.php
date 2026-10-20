@@ -29,7 +29,7 @@ use Himelali\Support\NumberParser;
  */
 class InWord
 {
-    const VERSION = '2.0.1';
+    const VERSION = '2.0.3';
 
     /**
      * @var LanguageRegistry
